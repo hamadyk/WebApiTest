@@ -1,17 +1,29 @@
-name: Simple CI
+name: Build & Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Echo message
-        run: echo "Hello GitHub Actions!"
+    - name: Build Docker image
+      run: docker build -t taskapi .
+
+    - name: Login Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy container
+      run: |
+        az containerapp up \
+          --name taskapi \
+          --resource-group myRG \
+          --image taskapi \
+          --target-port 80 \
+          --ingress external
