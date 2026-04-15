@@ -23,7 +23,7 @@ jobs:
       run: |
         az containerapp up \
           --name taskapi \
-          --resource-group myRG \
+          --resource-group myrghk \
           --image taskapi \
           --target-port 80 \
           --ingress external
